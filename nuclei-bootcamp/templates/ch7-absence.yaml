@@ -1,0 +1,42 @@
+id: ch7-trust-absence
+info:
+  name: CH7 Missing Security Controls Detection
+  author: bootcamp
+  severity: medium
+  description: Detects absence of proper security controls such as missing authentication,
+               authorization headers, or trust mechanisms that should be present.
+  tags: logic,auth,misconfiguration,flask
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/'
+      - '{{BaseURL}}/api'
+      - '{{BaseURL}}/internal'
+      - '{{BaseURL}}/admin'
+      - '{{BaseURL}}/debug'
+    headers:
+      X-Forwarded-For: '127.0.0.1'
+      X-Real-IP: '127.0.0.1'
+      X-Original-URL: '/admin'
+    matchers-condition: or
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - 'admin'
+          - 'internal'
+          - 'debug'
+          - 'config'
+          - 'secret'
+        condition: or
+      - type: word
+        part: body
+        negative: true
+        words:
+          - 'unauthorized'
+          - 'forbidden'
+          - 'denied'

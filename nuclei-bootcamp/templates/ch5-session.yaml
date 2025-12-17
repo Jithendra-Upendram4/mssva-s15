@@ -1,0 +1,47 @@
+id: ch5-session-misconfiguration
+info:
+  name: CH5 Session Misconfiguration Detection
+  author: bootcamp
+  severity: medium
+  description: Detects session handling misconfiguration where session tokens are predictable,
+               not properly validated, or can be manipulated to gain unauthorized access.
+  tags: session,auth,flask
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/'
+      - '{{BaseURL}}/login'
+      - '{{BaseURL}}/dashboard'
+      - '{{BaseURL}}/admin'
+    matchers-condition: or
+    matchers:
+      - type: word
+        part: header
+        words:
+          - 'Set-Cookie'
+      - type: regex
+        part: header
+        regex:
+          - 'session=.*'
+          - 'sid=.*'
+          - 'token=.*'
+        condition: or
+
+  - method: GET
+    path:
+      - '{{BaseURL}}/dashboard'
+      - '{{BaseURL}}/profile'
+    headers:
+      Cookie: 'session=admin; role=admin'
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - 'admin'
+          - 'dashboard'
+          - 'welcome'
+        condition: or

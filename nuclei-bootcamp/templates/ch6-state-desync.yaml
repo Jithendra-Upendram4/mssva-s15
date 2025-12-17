@@ -1,0 +1,41 @@
+id: ch6-state-desync
+info:
+  name: CH6 State Desync Vulnerability
+  author: bootcamp
+  severity: high
+  description: Detects state desynchronization vulnerability where skipping the /advance step
+               and going directly from /init to /commit returns extended data that should
+               only be available after completing stage 2.
+  tags: logic,state,flask
+
+http:
+  - raw:
+      - |
+        GET /init HTTP/1.1
+        Host: {{Hostname}}
+
+      - |
+        GET /commit HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: {{sid}}
+
+    cookie-reuse: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'extended'
+          - 'ops'
+        condition: and
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: regex
+        name: sid
+        part: header
+        internal: true
+        regex:
+          - 'sid=([a-f0-9-]+)'

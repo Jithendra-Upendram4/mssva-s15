@@ -1,0 +1,25 @@
+id: ch1-auth-bypass-internal-token
+info:
+  name: CH1 Auth Bypass via Missing Password
+  author: bootcamp
+  severity: medium
+  description: Detects logical auth bypass where providing only `username` without `password`
+               returns an internal-access token.
+  tags: logic,auth,flask
+
+http:
+  - method: POST
+    path:
+      - '{{BaseURL}}/login'
+    headers:
+      Content-Type: application/json
+    body: '{"username":"nuclei-tester"}'
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'internal-access'
+      - type: status
+        status:
+          - 200

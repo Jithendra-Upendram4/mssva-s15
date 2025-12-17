@@ -1,0 +1,29 @@
+id: ch4-ssrf-detection
+info:
+  name: CH4 SSRF Detection
+  author: bootcamp
+  severity: high
+  description: Detects Server-Side Request Forgery (SSRF) vulnerability where the application
+               makes requests to user-controlled URLs, potentially accessing internal resources.
+  tags: ssrf,oast,flask
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/fetch?url=http://127.0.0.1:80'
+      - '{{BaseURL}}/proxy?url=http://127.0.0.1:80'
+      - '{{BaseURL}}/load?url=http://127.0.0.1:80'
+      - '{{BaseURL}}/request?url=http://127.0.0.1:80'
+    stop-at-first-match: true
+    matchers-condition: or
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - 'html'
+          - 'localhost'
+          - 'internal'
+        condition: or

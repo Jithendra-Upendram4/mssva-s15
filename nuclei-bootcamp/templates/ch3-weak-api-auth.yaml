@@ -1,0 +1,24 @@
+id: ch3-weak-api-auth
+info:
+  name: CH3 Weak Authorization - Any Token Accepted
+  author: bootcamp
+  severity: high
+  description: API endpoint does not validate Authorization header beyond its presence.
+               Any arbitrary token grants access to resources.
+  tags: auth,api,idor,flask
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/api/orders/1'
+    headers:
+      Authorization: Bearer fake-token
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'laptop'
+      - type: status
+        status:
+          - 200
