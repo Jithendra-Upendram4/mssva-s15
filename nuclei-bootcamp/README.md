@@ -1,4 +1,4 @@
-# Nuclei Bootcamp — CH1-CH3 Quick-Start Guide
+# Nuclei Bootcamp - CH1-CH3 Quick-Start Guide
 
 This README explains how to launch the vulnerable apps and run the Nuclei templates for the first three challenges.
 
@@ -11,7 +11,7 @@ This README explains how to launch the vulnerable apps and run the Nuclei templa
 
 ---
 
-## 1 — Start the Vulnerable Applications
+## 1 - Start the Vulnerable Applications
 
 Open **three** separate terminals and run:
 
@@ -41,7 +41,7 @@ curl http://127.0.0.1:8003/api/orders/1 -H "Authorization: fake"
 
 ---
 
-## 2 — Run Nuclei Templates
+## 2 - Run Nuclei Templates
 
 From the **nuclei-bootcamp** directory:
 
@@ -64,7 +64,7 @@ nuclei -t templates/ -l targets/local.txt
 
 ---
 
-## 3 — Review Submissions
+## 3 - Review Submissions
 
 Pre-filled submission files are available in the `submissions/` folder:
 
